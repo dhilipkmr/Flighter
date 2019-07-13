@@ -1,10 +1,10 @@
 function flighter() {
-  this.flightList = [];
   this.nameElt = null;
   this.ratingElt = null;
   this.priceElt = null;
   this.originElt = null;
   this.destinationElt = null;
+  this.flightList = [];
   // Helps with eliminating duplicates
   this.flights = {
     origin: {},
@@ -23,6 +23,33 @@ flighter.prototype.nextCardHTML = function(card) {
   return nextCardElt;
 }
 
+flighter.prototype.resetFields = function() {
+  this.nameElt.value = '';
+  this.ratingElt.value = '';
+  this.priceElt.value = '';
+  this.originElt.value = '';
+  this.destinationElt.value = '';
+}
+
+flighter.prototype.updateEasyAccess = function(card) {
+  if (!this.flights.origin[card.origin]) {
+    this.flights.origin[card.origin] = true;
+    const originFilterElt = document.getElementById('originFilter');
+    const nextOriginElt = document.createElement('li');
+    nextOriginElt.className = 'padL10';
+    nextOriginElt.innerText = card.origin;
+    originFilterElt.append(nextOriginElt);
+  }
+  if (!this.flights.destination[card.destination]) {
+    this.flights.destination[card.destination] = true;
+    const destFilterElt = document.getElementById('destFilter');
+    const nextDestElt = document.createElement('li');
+    nextDestElt.className = 'padL10';
+    nextDestElt.innerText = card.destination;
+    destFilterElt.append(nextDestElt);
+  }
+}
+
 flighter.prototype.addCard = function() {
   const card = {};
   card.name = this.nameElt.value;
@@ -36,28 +63,9 @@ flighter.prototype.addCard = function() {
   }
   const itemsContainer = document.getElementById('flightItems');
   itemsContainer.append(this.nextCardHTML(card));
-
-  // Update Easy Access
-  if (!this.flights.origin[card.origin]) {
-    this.flights.origin[card.origin] = true;
-    const nextOriginElt = document.createElement('div');
-    const originFilterElt = document.getElementById('originFilter');
-    nextOriginElt.innerHTML = `<li class="padL10">${card.origin}</li>`;
-    originFilterElt.append(nextOriginElt);
-  }
-  if (!this.flights.destination[card.destination]) {
-    this.flights.destination[card.destination] = true;
-    const nextDestElt = document.createElement('div');
-    const destFilterElt = document.getElementById('destFilter');
-    nextDestElt.innerHTML = `<li class="padL10">${card.destination}</li>`;
-    destFilterElt.append(nextDestElt);
-  }
+  this.updateEasyAccess(card);
   this.flightList.push(card);
-  this.nameElt.value = '';
-  this.ratingElt.value = '';
-  this.priceElt.value = '';
-  this.originElt.value = '';
-  this.destinationElt.value = '';
+  this.resetFields();
 }
 
 // Sorting the flightList based on the sorting applied
