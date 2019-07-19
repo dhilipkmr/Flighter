@@ -4,12 +4,16 @@ function flighter() {
   this.priceElt = null;
   this.originElt = null;
   this.destinationElt = null;
-  this.flightList = [];
+  this.flightList = [...window.flightList];
   // Helps with eliminating duplicates
   this.flights = {
     origin: {},
     destination: {}
   }
+  this.flightList.forEach((fltItem) => {
+    this.flights.origin[fltItem.origin] = true;
+    this.flights.destination[fltItem.destination] = true;
+  });
 }
 // Provides the Next Flights Card to be loaded into the DOM
 flighter.prototype.nextCardHTML = function(card) {
