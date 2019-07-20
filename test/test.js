@@ -48,15 +48,6 @@ describe('Flighter app \n', function() {
       destFilter = await driver.findElement(By.id("destFilter"));
   })
 
-  it('should test load the page', async function() {
-      let page = await driver.getPageSource();
-      driver.takeScreenshot().then(
-          function(image, err) {
-              require('fs').writeFile('initial-view.png', image, 'base64', function(err) {});
-          }
-      );
-  });
-
   it('should add the flight card on clicking `Add` button', async function() {
     name.sendKeys('Spicejet');
     origin.sendKeys('Bangalore');
@@ -75,7 +66,7 @@ describe('Flighter app \n', function() {
     expect(ratingVal).to.contain('1000');
   });
 
-  it('should not add when input fields are empty', async function() {
+  it('should show error when input fields are empty', async function() {
     name.sendKeys('');
     origin.sendKeys('');
     destination.sendKeys('');
@@ -83,7 +74,9 @@ describe('Flighter app \n', function() {
     rating.sendKeys('');
     await addBtn.click();
     const hasNoItem = await driver.executeScript("return document.querySelectorAll('#flightItems ul').length === 2");
+    const displayError = await driver.executeScript("return getComputedStyle(document.getElementsByClassName('error')[0]).display !== 'none'");
     expect(hasNoItem).to.be.true;
+    expect(displayError).to.be.true;
   });
 
   it('should reset after adding a flight item', async function() {
@@ -252,6 +245,11 @@ describe('Flighter app \n', function() {
     price.sendKeys('1000');
     rating.sendKeys('4');
     await addBtn.click();
+
+    const nameVal = await driver.executeScript("return document.querySelectorAll('#flightItems ul')[2].children[0].innerText");
+    expect(nameVal).to.contain('Flight Name');
+    expect(nameVal).to.contain('Indigo');
+
     const jsEasyAccess = "document.querySelectorAll('#originFilter li').length === 2";
     let hasNoDuplicateSource =  await driver.executeScript(`return ${jsEasyAccess}`);
     expect(hasNoDuplicateSource).to.be.true;
